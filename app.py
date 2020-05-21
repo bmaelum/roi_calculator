@@ -13,16 +13,9 @@ app.config['SECRET_KEY'] = SECRET_KEY
 class MyForm(FlaskForm):
     investment  = StringField('pclass', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
 
-@app.route('/')
+
+@app.route('/', methods=['GET', 'POST'])
 def index():
-        return render_template('index.html')
-
-@app.route('/index2')
-def index2():
-        return render_template('index2.html')
-
-@app.route('/index3', methods=['GET', 'POST'])
-def index3():
 
         form = MyForm()
 
@@ -31,7 +24,7 @@ def index3():
                 investment = form.investment.data
                 
 
-        return render_template('index3.html', form=form)
+        return render_template('index.html', form=form)
 
 if __name__ == "__main__":
     app.run(debug=True)
