@@ -150,8 +150,10 @@ to get the desired effect
                         {{ loanForm.estateValue(size=20) }}
                         <input type="submit" value="Submit">
                       </div>
-      
+                      
                     </form>
+
+                    {% if loanDict['necessaryEquity'] %}
                     <div>
                       <label>Necessary Equity</label>
                       {{ "{:,.0f} NOK".format(loanDict['necessaryEquity']) }}
@@ -161,6 +163,8 @@ to get the desired effect
                       <label>Dokumentavgift</label>
                       {{ "{:,.0f} NOK".format(loanDict['dokumentAvgift']) }}
                     </div>
+
+                     {% endif %}
                       
                    
                   </div>
