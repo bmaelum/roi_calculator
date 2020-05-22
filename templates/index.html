@@ -136,23 +136,33 @@ to get the desired effect
             <div class="card">
               <div class="card-header border-0">
                 <div class="d-flex justify-content-between">
-                  <h3 class="card-title">ROI Calculator Fund</h3>
+                  <h3 class="card-title">ROI Calculator Loan</h3>
                 </div>
               </div>
               <div class="card-body">
                 <div class="section">
                   <div class="container">
                     <form method="POST" action="/">
-                      {{ form.hidden_tag() }}
+                      {{ loanForm.hidden_tag() }}
       
                       <div class="form-group" style="margin-right: 120px;">
-                        <label>Investment</label>
-                        {{ form.investment(size=20) }}
+                        <label>Real Estate Value</label>
+                        {{ loanForm.estateValue(size=20) }}
+                        <input type="submit" value="Submit">
                       </div>
       
-                      
-                      <input type="submit" value="Submit">
                     </form>
+                    <div>
+                      <label>Necessary Equity</label>
+                      {{ "{:,.0f} NOK".format(loanDict['necessaryEquity']) }}
+                    </div>
+                      
+                    <div>
+                      <label>Dokumentavgift</label>
+                      {{ "{:,.0f} NOK".format(loanDict['dokumentAvgift']) }}
+                    </div>
+                      
+                   
                   </div>
                 </div>
                
@@ -165,25 +175,11 @@ to get the desired effect
             <div class="card">
               <div class="card-header border-0">
                 <div class="d-flex justify-content-between">
-                  <h3 class="card-title">ROI Calculator Loan</h3>
+                  <h3 class="card-title">ROI Calculator Fund</h3>
                 </div>
               </div>
               <div class="card-body">
-                <div class="section">
-                  <div class="container">
-                    <form method="POST" action="/">
-                      {{ form.hidden_tag() }}
-      
-                      <div class="form-group" style="margin-right: 120px;">
-                        <label>Investment</label>
-                        {{ form.investment(size=20) }}
-                      </div>
-      
-                      
-                      <input type="submit" value="Submit">
-                    </form>
-                  </div>
-                </div>
+                
                
               </div>
             </div>
