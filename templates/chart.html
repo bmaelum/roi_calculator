@@ -1,3 +1,5 @@
+<!DOCTYPE html>
+<html lang="en">
 <head>
   <meta charset="utf-8" />
   <title>{{ title }}</title>
@@ -8,7 +10,7 @@
   <center>
     <h1>{{ title }}</h1>
 
-    <canvas id="chart" width="600" height="400"></canvas>
+    <canvas id="chart" width=100% height=100%></canvas>
     <script>
 
       // bar chart data
@@ -49,13 +51,15 @@
       var mychart = document.getElementById("chart").getContext("2d");
 
       steps = 10
-      max = {{ max }}
+      max = {{ 100 }}
+      min = {{ min }}
+      
       // draw bar chart
       var LineChartDemo = new Chart(mychart).Line(barData, {
         scaleOverride: true,
         scaleSteps: steps,
         scaleStepWidth: Math.ceil(max / steps),
-        scaleStartValue: 0,
+        scaleStartValue: 1000,
         scaleShowVerticalLines: true,
         scaleShowGridLines : true,
         barShowStroke : true,

@@ -4,6 +4,10 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField
 from wtforms.validators import DataRequired
 
+import numpy as np
+
+import datetime
+
 app = Flask(__name__)
 
 import os
@@ -12,6 +16,8 @@ app.config['SECRET_KEY'] = SECRET_KEY
 
 class MyForm(FlaskForm):
     estateValue         = StringField('estateValue', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    interestRate        = StringField('interestRate', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+
 
 language = 'NO'
 
@@ -50,35 +56,43 @@ def index():
                 loanDict['necessaryEquity'] = int(loanDict['estateValue'] * 0.15)
                 loanDict['dokumentAvgift'] = int(loanDict['estateValue'] * 0.025)
 
-                print(loanDict)
+                loanDict['interestRate'] = float(loanForm.interestRate.data)
+
+                line_labels, line_values = generate_chart(loanDict)
+
+                return render_template('index.html', loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
         
         else:
                 print('Loan form not validated.')
 
 
-        ## Charts
-        labels = [
-            'JAN', 'FEB', 'MAR', 'APR',
-            'MAY', 'JUN', 'JUL', 'AUG',
-            'SEP', 'OCT', 'NOV', 'DEC'
-        ]
+        
 
-        values = [
-            967.67, 1190.89, 1079.75, 1349.19,
-            2328.91, 2504.28, 2873.83, 4764.87,
-            4349.29, 6458.30, 9907, 16297
-        ]
+        return render_template('index.html', loanForm=loanForm, loanDict=loanDict)
 
-        line_labels=labels
-        line_values=values
 
-        return render_template('index.html', loanForm=loanForm, loanDict=loanDict,title='ROI per year', max=17000, labels=line_labels, values=line_values)
+def generate_chart(dataDict):
 
-@app.route('/line')
-def line():
-    line_labels=labels
-    line_values=values
-    return render_template('chart.html', title='Bitcoin Monthly Price in USD', max=17000, labels=line_labels, values=line_values)
+            # Generate labels
+            now = datetime.datetime.now()
+            labels = np.linspace(now.year, now.year+11, num=12, endpoint=True)
+
+            # Calculate values
+            values = exponential(dataDict['estateValue'], dataDict['interestRate'], 12)
+
+            line_labels=labels
+            line_values=values
+
+            return line_labels, line_values
+
+def exponential(start, base, num_samples):
+
+    samples = [start]
+
+    for i in range(0, num_samples):
+        samples.append(int(samples[-1] * base))
+
+    return samples
 
 
 if __name__ == "__main__":
