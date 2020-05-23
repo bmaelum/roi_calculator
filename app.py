@@ -39,7 +39,28 @@ colors = [
     "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
     "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
 
+def generate_chart(dataDict):
 
+            # Generate labels
+            now = datetime.datetime.now()
+            labels = np.linspace(now.year, now.year+11, num=12, endpoint=True)
+
+            # Calculate values
+            values = exponential(dataDict['estateValue'], dataDict['interestRate'], 12)
+
+            line_labels=labels
+            line_values=values
+
+            return line_labels, line_values
+
+def exponential(start, base, num_samples):
+
+    samples = [start]
+
+    for i in range(0, num_samples):
+        samples.append(int(samples[-1] * base))
+
+    return samples
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -65,34 +86,7 @@ def index():
         else:
                 print('Loan form not validated.')
 
-
-        
-
         return render_template('index.html', loanForm=loanForm, loanDict=loanDict)
-
-
-def generate_chart(dataDict):
-
-            # Generate labels
-            now = datetime.datetime.now()
-            labels = np.linspace(now.year, now.year+11, num=12, endpoint=True)
-
-            # Calculate values
-            values = exponential(dataDict['estateValue'], dataDict['interestRate'], 12)
-
-            line_labels=labels
-            line_values=values
-
-            return line_labels, line_values
-
-def exponential(start, base, num_samples):
-
-    samples = [start]
-
-    for i in range(0, num_samples):
-        samples.append(int(samples[-1] * base))
-
-    return samples
 
 
 if __name__ == "__main__":
