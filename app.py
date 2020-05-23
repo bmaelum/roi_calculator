@@ -56,7 +56,23 @@ def index():
                 print('Loan form not validated.')
 
 
-        return render_template('index.html', loanForm=loanForm, loanDict=loanDict)
+        ## Charts
+        labels = [
+            'JAN', 'FEB', 'MAR', 'APR',
+            'MAY', 'JUN', 'JUL', 'AUG',
+            'SEP', 'OCT', 'NOV', 'DEC'
+        ]
+
+        values = [
+            967.67, 1190.89, 1079.75, 1349.19,
+            2328.91, 2504.28, 2873.83, 4764.87,
+            4349.29, 6458.30, 9907, 16297
+        ]
+
+        line_labels=labels
+        line_values=values
+
+        return render_template('index.html', loanForm=loanForm, loanDict=loanDict,title='ROI per year', max=17000, labels=line_labels, values=line_values)
 
 @app.route('/line')
 def line():
