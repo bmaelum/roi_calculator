@@ -136,7 +136,7 @@ to get the desired effect
             <div class="card">
               <div class="card-header border-0">
                 <div class="d-flex justify-content-between">
-                  <h3 class="card-title">ROI Calculator Loan</h3>
+                  <h2 class="card-title">ROI Calculator Loan</h2>
                 </div>
               </div>
               <div class="card-body">
@@ -144,109 +144,140 @@ to get the desired effect
                   <div class="container">
                     <form method="POST" action="/">
                       {{ loanForm.hidden_tag() }}
-      
-                      <div class="form-group" style="margin-right: 120px;">
-                        <label>Real Estate Value</label>
-                        {{ loanForm.estateValue(size=20) }}
-                      </div>
+                      <table class="table">
+                        <tr>
+                          <td>
+                            <div class="form-group" style="margin-right: 120px;">
+                            <label>Real Estate Value</label>
+                            {{ loanForm.estateValue(size=20) }}
+                            </div>
+                          </td>
+                          <td>
+                            <div class="form-group" style="margin-right: 120px;">
+                              <label>Interest Rate</label>
+                              {{ loanForm.interestRate(size=20) }}
+                            </div>
+                          </td>
+                        </tr>
+                        <tr>
+                          <td>
+                            <div class="form-group" style="margin-right: 120px;">
+                              <label>Number of Years</label>
+                              {{ loanForm.numYears(size=20) }}
+                            </div>
+                          </td>
+                          
+                        </tr>
+                      </table>
 
-                      <div class="form-group" style="margin-right: 120px;">
-                        <label>Interest Rate</label>
-                        {{ loanForm.interestRate(size=20) }}
-                      </div>
                       <input type="submit" value="Submit">
 
                     </form>
 
                     {% if loanDict['necessaryEquity'] %}
-                    <div>
-                      <label>Necessary Equity</label>
-                      {{ "{:,.0f} NOK".format(loanDict['necessaryEquity']) }}
-                    </div>
-                      
-                    <div>
-                      <label>Dokumentavgift</label>
-                      {{ "{:,.0f} NOK".format(loanDict['dokumentAvgift']) }}
-                    </div>
-                    
-                    <div>
-                      <label>YoY Interest Rate</label>
-                      {{ (loanDict['interestRate'] * 100 - 100)|string + '%'}}
-                    </div>
-                    
-                      
-                     <!DOCTYPE html>
-                    <html lang="en">
-                    <head>
-                      <meta charset="utf-8" />
-                      <title>{{ title }}</title>
-                      <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
-                    </head>
+                    <table class="table">
+                      <tr>
+                        <td>
+                            <label>Necessary Equity</label>
+                        </td>
+                        <td>
+                          {{ "{:,.0f} NOK".format(loanDict['necessaryEquity']) }}
+                        </td>
+                      </tr>
 
-                    <body>
-                      <center>
-                        <h1>{{ title }}</h1>
+                      <tr>
+                        <td>
+                            <label>Dokumentavgift</label>
+                        </td>
+                        <td>
+                          {{ "{:,.0f} NOK".format(loanDict['dokumentAvgift']) }}
+                        </td>
+                      </tr>
 
-                        <canvas id="chart" width="600" height="400"></canvas>
-                        <script>
+                      <tr>
+                        <td>
+                            <label>YoY Interest Rate</label>
+                        </td>
+                        <td>
+                          {{ (loanDict['interestRate'] * 100 - 100)|string + '%'}}
+                        </td>
+                      </tr>
 
-                          // bar chart data
-                          var barData = {
-                            labels : [
-                              {% for item in labels %}
-                                "{{ item|string }}",
-                              {% endfor %}
-                            ],
+                    </table>
 
-                            datasets : [{
-                              fillColor: "rgba(151,187,205,0.2)",
-                              strokeColor: "rgba(151,187,205,1)",
-                              pointColor: "rgba(151,187,205,1)",
-                              pointStrokeColor: "#fff",
-                              pointHighlightFill: "#fff",
-                              pointHighlightStroke: "rgba(151,187,205,1)",
-                              bezierCurve : false,
-                              data : [
-                          {% for item in values %}
-                                  {{ item }},
-                                {% endfor %}]
-                              }
-                      ]
-                          }
+                        
+                      <!DOCTYPE html>
+                      <html lang="en">
+                      <head>
+                        <meta charset="utf-8" />
+                        <title>{{ title }}</title>
+                        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
+                      </head>
 
-                          Chart.defaults.global.animationSteps = 50;
-                          Chart.defaults.global.tooltipYPadding = 16;
-                          Chart.defaults.global.tooltipCornerRadius = 0;
-                          Chart.defaults.global.tooltipTitleFontStyle = "normal";
-                          Chart.defaults.global.tooltipFillColor = "rgba(0,0,0,0.8)";
-                          Chart.defaults.global.animationEasing = "easeOutBounce";
-                          Chart.defaults.global.responsive = false;
-                          Chart.defaults.global.scaleLineColor = "black";
-                          Chart.defaults.global.scaleFontSize = 16;
+                      <body>
+                        <center>
+                          <h1>{{ title }}</h1>
 
-                          // get bar chart canvas
-                          var mychart = document.getElementById("chart").getContext("2d");
+                          <canvas id="chart" width="600" height="400"></canvas>
+                          <script>
 
-                          steps = 10
-                          max = {{ max }}
-                          min = {{ min }}
-                          // draw bar chart
-                          var LineChartDemo = new Chart(mychart).Line(barData, {
-                            scaleOverride: true,
-                            scaleSteps: steps,
-                            scaleStepWidth: Math.ceil(max / steps),
-                            scaleStartValue: min,
-                            scaleShowVerticalLines: true,
-                            scaleShowGridLines : true,
-                            barShowStroke : true,
-                            scaleShowLabels: true,
-                            bezierCurve: false,
-                          });
-                          
-                        </script>
-                      </center>
-                    </body>
-                    </html>
+                            // bar chart data
+                            var barData = {
+                              labels : [
+                                {% for item in labels %}
+                                  "{{ item|string }}",
+                                {% endfor %}
+                              ],
+
+                              datasets : [{
+                                fillColor: "rgba(151,187,205,0.2)",
+                                strokeColor: "rgba(151,187,205,1)",
+                                pointColor: "rgba(151,187,205,1)",
+                                pointStrokeColor: "#fff",
+                                pointHighlightFill: "#fff",
+                                pointHighlightStroke: "rgba(151,187,205,1)",
+                                bezierCurve : false,
+                                data : [
+                            {% for item in values %}
+                                    {{ item }},
+                                  {% endfor %}]
+                                }
+                        ]
+                            }
+
+                            Chart.defaults.global.animationSteps = 50;
+                            Chart.defaults.global.tooltipYPadding = 16;
+                            Chart.defaults.global.tooltipCornerRadius = 0;
+                            Chart.defaults.global.tooltipTitleFontStyle = "normal";
+                            Chart.defaults.global.tooltipFillColor = "rgba(0,0,0,0.8)";
+                            Chart.defaults.global.animationEasing = "easeOutBounce";
+                            Chart.defaults.global.responsive = false;
+                            Chart.defaults.global.scaleLineColor = "black";
+                            Chart.defaults.global.scaleFontSize = 16;
+
+                            // get bar chart canvas
+                            var mychart = document.getElementById("chart").getContext("2d");
+
+                            steps = 10
+                            max = {{ max }}
+                            min = {{ min }}
+                            // draw bar chart
+                            var LineChartDemo = new Chart(mychart).Line(barData, {
+                              scaleOverride: true,
+                              scaleSteps: steps,
+                              scaleStepWidth: Math.ceil(max / steps),
+                              scaleStartValue: min,
+                              scaleShowVerticalLines: true,
+                              scaleShowGridLines : true,
+                              barShowStroke : true,
+                              scaleShowLabels: true,
+                              bezierCurve: false,
+                            });
+                            
+                          </script>
+                        </center>
+                      </body>
+                      </html>
                     
                     {% endif %}
                    
