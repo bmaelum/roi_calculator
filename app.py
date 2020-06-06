@@ -17,6 +17,7 @@ app.config['SECRET_KEY'] = SECRET_KEY
 class MyForm(FlaskForm):
     estateValue         = StringField('estateValue', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
     interestRate        = StringField('interestRate', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    numYears           = StringField('numYears', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
 
 
 language = 'NO'
@@ -43,10 +44,10 @@ def generate_chart(dataDict):
 
             # Generate labels
             now = datetime.datetime.now()
-            labels = np.linspace(now.year, now.year+11, num=12, endpoint=True)
+            labels = np.linspace(now.year, now.year+11, num=dataDict['numYears'], endpoint=True)
 
             # Calculate values
-            values = exponential(dataDict['estateValue'], dataDict['interestRate'], 12)
+            values = exponential(dataDict['estateValue'], dataDict['interestRate'], dataDict['numYears'])
 
             line_labels=labels
             line_values=values
@@ -71,13 +72,15 @@ def index():
 
         if loanForm.validate_on_submit():
                 print('Validated.')
-                print(loanDict)
-                print(loanDict)
+
                 loanDict['estateValue'] = int(loanForm.estateValue.data)
+                loanDict ['numYears'] = int(loanForm.numYears.data)
+
                 loanDict['necessaryEquity'] = int(loanDict['estateValue'] * 0.15)
                 loanDict['dokumentAvgift'] = int(loanDict['estateValue'] * 0.025)
 
                 loanDict['interestRate'] = float(loanForm.interestRate.data)
+
 
                 line_labels, line_values = generate_chart(loanDict)
 
