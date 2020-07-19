@@ -42,16 +42,47 @@
                           <td>
                             <div class="form-group" style="margin-right: 120px;">
                             <label>Starting Equity</label>
-                            {{ fundSavingsForm.startingEquity(size=20) }}
-                            </div>
-                          </td>
-                          <td>
-                            <div class="form-group" style="margin-right: 120px;">
-                              <label>Interest Rate (in %)</label>
-                              {{ fundSavingsForm.interestRatePercent(size=20) }}
+                            {{ fundSavingsForm.startingEquity(size=20) }} 
                             </div>
                           </td>
                         </tr>
+
+                        <tr>
+                          <td>
+                            <div class="form-group" style="margin-right: 120px;">
+                            <label>Savings per month</label>
+                            {{ fundSavingsForm.savingsPerMonth(size=20) }} 
+                            </div>
+                          </td>
+                        </tr>
+
+                        <tr>
+                          <td>
+                          <div class="form-group" style="margin-right: 120px;">
+                            <label>Interest Rate (in %)</label>
+                            {{ fundSavingsForm.interestRatePercent(size=20) }}
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          <div class="form-group" style="margin-right: 120px;">
+                          <label>Tax Rate(in %)</label>
+                          {{ fundSavingsForm.taxRate(size=20) }} 
+                          </div>
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                          <div class="form-group" style="margin-right: 120px;">
+                          <label>Cost of Fund(in %)</label>
+                          {{ fundSavingsForm.costOfFund(size=20) }} 
+                          </div>
+                        </td>
+                      </tr>
+
                         <tr>
                           <td>
                             <div class="form-group" style="margin-right: 120px;">
