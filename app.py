@@ -15,7 +15,6 @@ SECRET_KEY = os.urandom(10)
 app.config['SECRET_KEY'] = SECRET_KEY
 
 class MyForm(FlaskForm):
-<<<<<<< HEAD
     estateValue         = StringField('estateValue', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
     interestRate        = StringField('interestRate', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
     numYears           = StringField('numYears', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
@@ -65,11 +64,6 @@ def exponential(start, base, num_samples):
     return samples
 
 @app.route('/', methods=['GET', 'POST'])
-=======
-    investment  = StringField('pclass', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
-
-@app.route('/')
->>>>>>> 5f6bfbf16cfce979e2426216d7ecd4a7da5daf0b
 def index():
         return render_template('index.html')
 
@@ -77,7 +71,6 @@ def index():
 def index2():
         return render_template('index2.html')
 
-<<<<<<< HEAD
         if loanForm.validate_on_submit():
                 print('Validated.')
 
@@ -98,17 +91,6 @@ def index2():
                 print('Loan form not validated.')
 
         return render_template('index.html', loanForm=loanForm, loanDict=loanDict)
-=======
-@app.route('/index3', methods=['GET', 'POST'])
-def index3():
-
-        form = MyForm()
-
-        if form.validate_on_submit():
-                print('Validated.')
-                investment = form.investment.data
-                
->>>>>>> 5f6bfbf16cfce979e2426216d7ecd4a7da5daf0b
 
         return render_template('index3.html', form=form)
 
