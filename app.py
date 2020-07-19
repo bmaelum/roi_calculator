@@ -91,6 +91,33 @@ def index():
 
         return render_template('index.html', loanForm=loanForm, loanDict=loanDict)
 
+@app.route('/fund_savings', methods=['GET', 'POST'])
+def fund_savings():
+        
+    loanForm = MyForm()
+
+    loanDict = dict()
+
+    if loanForm.validate_on_submit():
+        print('Validated.')
+
+        loanDict['estateValue'] = int(loanForm.estateValue.data)
+        loanDict ['numYears'] = int(loanForm.numYears.data)
+
+        loanDict['necessaryEquity'] = int(loanDict['estateValue'] * 0.15)
+        loanDict['dokumentAvgift'] = int(loanDict['estateValue'] * 0.025)
+
+        loanDict['interestRate'] = float(loanForm.interestRate.data)
+
+
+        line_labels, line_values = generate_chart(loanDict)
+
+        return render_template('index.html', loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
+    
+    else:
+        print('Loan form not validated.')
+
+    return render_template('fund_savings.html', loanForm=loanForm, loanDict=loanDict)
 
 if __name__ == "__main__":
     app.run(debug=True)
