@@ -14,11 +14,18 @@ import os
 SECRET_KEY = os.urandom(10)
 app.config['SECRET_KEY'] = SECRET_KEY
 
-class MyForm(FlaskForm):
+class loanFormClass(FlaskForm):
     estateValue         = StringField('estateValue', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
     interestRate        = StringField('interestRate', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
-    numYears           = StringField('numYears', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    numYears            = StringField('numYears', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
 
+class fundSavingsFormClass(FlaskForm):
+    startingEquity                  = StringField('startingEquity', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    interestRatePercent             = StringField('interestRatePercent', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    numYears                        = StringField('numYears', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    savingsPerMonth                 = StringField('savingsPerMonth', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    costOfFund                      = StringField('costOfFund', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
+    taxRate                         = StringField('taxRate', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
 
 language = 'NO'
 
@@ -40,7 +47,7 @@ colors = [
     "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
     "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
 
-def generate_chart(dataDict):
+def generate_roi_chart(dataDict):
 
             # Generate labels
             now = datetime.datetime.now()
@@ -48,6 +55,20 @@ def generate_chart(dataDict):
 
             # Calculate values
             values = exponential(dataDict['estateValue'], dataDict['interestRate'], dataDict['numYears'])
+
+            line_labels=labels
+            line_values=values
+
+            return line_labels, line_values
+
+def generate_fundsavings_chart(dataDict):
+
+            # Generate labels
+            now = datetime.datetime.now()
+            labels = np.linspace(now.year, now.year+(dataDict['numYears']-1), num=dataDict['numYears'], endpoint=True)
+
+            # Calculate values
+            values = exponential(dataDict['startingEquity'], dataDict['interestRate'], dataDict['numYears'])
 
             line_labels=labels
             line_values=values
@@ -63,10 +84,60 @@ def exponential(start, base, num_samples):
 
     return samples
 
+def fundSavingsROI(dataDict):
+    sum_input = dataDict['startingEquity']
+    sum_with_return = dataDict['startingEquity']
+    MoM_return = dataDict['interestRateMoM']
+    cost_of_fund = dataDict['costOfFund']
+    tax_rate = dataDict['taxRate']
+    num_years = dataDict['numYears']
+    accumulated_cost_of_fund = 0
+
+    for i in range(1, dataDict['numMonths']):
+        print('--- Month ' + str(i) + '---')
+        sum_input += dataDict['savingsPerMonth']
+        sum_with_return += dataDict['savingsPerMonth']
+        sum_with_return = int(sum_with_return * (MoM_return))
+        print('Accumulated savings:  ' + str(sum_input) + ',-')
+        print('With return:          ' + str(sum_with_return) + ',-')
+        if i % 12 == 0:
+            print('\n- Year ' + str(int(i / 12)) + ' -')
+            sum_with_return = int(sum_with_return * (1 - cost_of_fund))
+            current_cost_of_fund = int(sum_with_return * cost_of_fund)
+            accumulated_cost_of_fund += current_cost_of_fund
+            print('Yearly cost of fund = ' + str(round(current_cost_of_fund)) + ',-')
+            print('Sum after yearly cost deducted from overall sum = ' + str(sum_with_return) + ',-')
+            print('-------------------------\n')
+
+    dataDict['accumulated_savings'] = round(sum_input,2)
+    dataDict['accumulated_savings_with_return'] = round(sum_with_return,2)
+    dataDict['accumulated_cost_of_fund'] = accumulated_cost_of_fund
+
+    total_gain = sum_with_return - sum_input 
+    dataDict['total_gain'] = round(total_gain,2)
+
+    gain_after_tax = total_gain * (1 - (tax_rate))
+    tax_deduction = total_gain * tax_rate
+    print('Tax = ' + str(tax_deduction) + ',-')
+    print('Actual gain after ' + str(num_years) + ' years = ' + str(gain_after_tax) + ',-')
+    dataDict['tax'] = round(tax_deduction,2)
+
+    total_fund_cost = dataDict['accumulated_cost_of_fund'] + tax_deduction
+    print('Total cost of fund = ' + str(total_fund_cost))
+    dataDict['total_cost_of_fund'] = round(total_fund_cost)
+
+    dataDict['actual_gain_at_withdraw'] = round(gain_after_tax,2)
+    dataDict['actual_gain_at_withdraw']
+
+    dataDict['fortune'] = dataDict['accumulated_savings'] + dataDict['actual_gain_at_withdraw']
+    dataDict['fortune']
+
+    return dataDict
+
 @app.route('/', methods=['GET', 'POST'])
 def index():
 
-        loanForm = MyForm()
+        loanForm = loanFormClass()
 
         loanDict = dict()
 
@@ -82,7 +153,7 @@ def index():
                 loanDict['interestRate'] = float(loanForm.interestRate.data)
 
 
-                line_labels, line_values = generate_chart(loanDict)
+                line_labels, line_values = generate_roi_chart(loanDict)
 
                 return render_template('index.html', loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
         
@@ -94,30 +165,38 @@ def index():
 @app.route('/fund_savings', methods=['GET', 'POST'])
 def fund_savings():
         
-    loanForm = MyForm()
+    fundSavingsForm = fundSavingsFormClass()
 
-    loanDict = dict()
+    fundSavingsDict = dict()
 
-    if loanForm.validate_on_submit():
+    if fundSavingsForm.validate_on_submit():
         print('Validated.')
 
-        loanDict['estateValue'] = int(loanForm.estateValue.data)
-        loanDict ['numYears'] = int(loanForm.numYears.data)
-
-        loanDict['necessaryEquity'] = int(loanDict['estateValue'] * 0.15)
-        loanDict['dokumentAvgift'] = int(loanDict['estateValue'] * 0.025)
-
-        loanDict['interestRate'] = float(loanForm.interestRate.data)
+        fundSavingsDict['startingEquity']       = int(fundSavingsForm.startingEquity.data)
+        fundSavingsDict ['numYears']            = int(fundSavingsForm.numYears.data)
+        fundSavingsDict ['numMonths']           = int(fundSavingsForm.numYears.data) * 12
 
 
-        line_labels, line_values = generate_chart(loanDict)
+        fundSavingsDict['interestRatePercent']  = float(fundSavingsForm.interestRatePercent.data)
+        fundSavingsDict['interestRate']         = (fundSavingsDict['interestRatePercent']  / 100) + 1
+        fundSavingsDict['interestRateMoM']      = fundSavingsDict['interestRate'] ** (1 / 12)
 
-        return render_template('index.html', loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
+        fundSavingsDict['savingsPerMonth']      = int(fundSavingsForm.savingsPerMonth.data)
+        fundSavingsDict['costOfFund']           = float(fundSavingsForm.costOfFund.data) / 100
+        fundSavingsDict['taxRate']              = float(fundSavingsForm.taxRate.data) / 100
+
+        fundSavingsDict = fundSavingsROI(fundSavingsDict)
+
+        print(fundSavingsDict)
+
+        line_labels, line_values = generate_fundsavings_chart(fundSavingsDict)
+
+        return render_template('fund_savings.html', fundSavingsForm=fundSavingsForm, fundSavingsDict=fundSavingsDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
     
     else:
-        print('Loan form not validated.')
+        print('Fund savings form not validated.')
 
-    return render_template('fund_savings.html', loanForm=loanForm, loanDict=loanDict)
+    return render_template('fund_savings.html', fundSavingsForm=fundSavingsForm, fundSavingsDict=fundSavingsDict)
 
 if __name__ == "__main__":
     app.run(debug=True)
