@@ -4,6 +4,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, SelectField
 from wtforms.validators import DataRequired
 
+import pandas as pd
 import numpy as np
 
 import datetime
@@ -108,6 +109,7 @@ def fundSavingsROI(dataDict):
             print('Yearly cost of fund = ' + str(round(current_cost_of_fund)) + ',-')
             print('Sum after yearly cost deducted from overall sum = ' + str(sum_with_return) + ',-')
             print('-------------------------\n')
+
 
     dataDict['accumulated_savings'] = round(sum_input,2)
     dataDict['accumulated_savings_with_return'] = round(sum_with_return,2)
