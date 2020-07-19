@@ -45,7 +45,7 @@ def generate_chart(dataDict):
 
             # Generate labels
             now = datetime.datetime.now()
-            labels = np.linspace(now.year, now.year+11, num=dataDict['numYears'], endpoint=True)
+            labels = np.linspace(now.year, now.year+(dataDict['numYears']-1), num=dataDict['numYears'], endpoint=True)
 
             # Calculate values
             values = exponential(dataDict['estateValue'], dataDict['interestRate'], dataDict['numYears'])
