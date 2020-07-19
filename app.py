@@ -65,7 +65,31 @@ def exponential(start, base, num_samples):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-        return render_template('index.html')
+
+        loanForm = MyForm()
+
+        loanDict = dict()
+
+        if loanForm.validate_on_submit():
+                print('Validated.')
+
+                loanDict['estateValue'] = int(loanForm.estateValue.data)
+                loanDict ['numYears'] = int(loanForm.numYears.data)
+
+                loanDict['necessaryEquity'] = int(loanDict['estateValue'] * 0.15)
+                loanDict['dokumentAvgift'] = int(loanDict['estateValue'] * 0.025)
+
+                loanDict['interestRate'] = float(loanForm.interestRate.data)
+
+
+                line_labels, line_values = generate_chart(loanDict)
+
+                return render_template('index.html', loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
+        
+        else:
+                print('Loan form not validated.')
+
+        return render_template('index.html', loanForm=loanForm, loanDict=loanDict)
 
 @app.route('/index2')
 def index2():
