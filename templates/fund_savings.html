@@ -101,7 +101,6 @@
                     {% if fundSavingsDict['startingEquity'] %}
                     <table class="table">
                       
-
                       <tr>
                         <td>
                             <label>YoY Interest Rate</label>
@@ -110,83 +109,74 @@
                           {{ (fundSavingsDict['interestRatePercent'])|string + '%'}}
                         </td>
                       </tr>
+                      
+                      <tr>
+                        <td>
+                            <label>MoM Interest Rate</label>
+                        </td>
+                        <td>
+                          {{ (fundSavingsDict['interestRateMoM'])|string + '%'}}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                            <label>Accumulated Savings</label>
+                        </td>
+                        <td>
+                          {{ (fundSavingsDict['accumulated_savings'])|string}}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                            <label>Accumulated Savings with Return</label>
+                        </td>
+                        <td>
+                          {{ (fundSavingsDict['accumulated_savings_with_return'])|string}}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                            <label>Total Cost of Fund</label>
+                        </td>
+                        <td>
+                          {{ (fundSavingsDict['total_cost_of_fund'])|string}}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                            <label>Actual Gain at Withdrawal</label>
+                        </td>
+                        <td>
+                          {{ (fundSavingsDict['actual_gain_at_withdraw'])|string}}
+                        </td>
+                      </tr>
+
+                      <tr>
+                        <td>
+                            <label>Fortune</label>
+                        </td>
+                        <td>
+                          {{ (fundSavingsDict['fortune'])|string}}
+                        </td>
+                      </tr>
 
                     </table>
 
-                        
-                      <!DOCTYPE html>
-                      <html lang="en">
-                      <head>
-                        <meta charset="utf-8" />
-                        <title>{{ title }}</title>
-                        <script src='https://cdnjs.cloudflare.com/ajax/libs/Chart.js/1.0.2/Chart.min.js'></script>
-                      </head>
-
-                      <body>
-                        <center>
-                          <h1>{{ title }}</h1>
-
-                          <canvas id="chart" width="600" height="400"></canvas>
-                          <script>
-
-                            // bar chart data
-                            var barData = {
-                              labels : [
-                                {% for item in labels %}
-                                  "{{ item|string }}",
-                                {% endfor %}
-                              ],
-
-                              datasets : [{
-                                fillColor: "rgba(151,187,205,0.2)",
-                                strokeColor: "rgba(151,187,205,1)",
-                                pointColor: "rgba(151,187,205,1)",
-                                pointStrokeColor: "#fff",
-                                pointHighlightFill: "#fff",
-                                pointHighlightStroke: "rgba(151,187,205,1)",
-                                bezierCurve : false,
-                                data : [
-                            {% for item in values %}
-                                    {{ item }},
-                                  {% endfor %}]
-                                }
-                        ]
-                            }
-
-                            Chart.defaults.global.animationSteps = 50;
-                            Chart.defaults.global.tooltipYPadding = 16;
-                            Chart.defaults.global.tooltipCornerRadius = 0;
-                            Chart.defaults.global.tooltipTitleFontStyle = "normal";
-                            Chart.defaults.global.tooltipFillColor = "rgba(0,0,0,0.8)";
-                            Chart.defaults.global.animationEasing = "easeOutBounce";
-                            Chart.defaults.global.responsive = false;
-                            Chart.defaults.global.scaleLineColor = "black";
-                            Chart.defaults.global.scaleFontSize = 16;
-
-                            // get bar chart canvas
-                            var mychart = document.getElementById("chart").getContext("2d");
-
-                            steps = 10
-                            max = {{ max }}
-                            min = {{ min }}
-                            // draw bar chart
-                            var LineChartDemo = new Chart(mychart).Line(barData, {
-                              scaleOverride: true,
-                              scaleSteps: steps,
-                              scaleStepWidth: Math.ceil(max / steps),
-                              scaleStartValue: min,
-                              scaleShowVerticalLines: true,
-                              scaleShowGridLines : true,
-                              barShowStroke : true,
-                              scaleShowLabels: true,
-                              bezierCurve: false,
-                            });
-                            
-                          </script>
-                        </center>
-                      </body>
-                      </html>
+                    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
                     
+                    <h3>Return per month</h3>
+                    <div class="chart" id="bargraph">
+                      <script>
+                          var graphs = {{plot | safe}};
+                          Plotly.plot('bargraph',graphs,{});
+                      </script>
+                  </div>
+                   
                     {% endif %}
                    
                   </div>
@@ -194,12 +184,15 @@
                
               </div>
             </div>
+
+            
            
           
           <!-- /.col-md-6 -->
           
           <!-- /.col-md-6 -->
         </div>
+        
         <!-- /.row -->
       </div>
       <!-- /.container-fluid -->
