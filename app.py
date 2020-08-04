@@ -6,6 +6,11 @@ from wtforms.validators import DataRequired
 
 import pandas as pd
 import numpy as np
+import json
+import plotly
+import plotly.graph_objs as go
+
+import matplotlib.pyplot as plt
 
 import datetime
 
@@ -47,6 +52,20 @@ colors = [
     "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA",
     "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
     "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
+
+def create_plot(df_data):
+
+    data = [
+        go.Line(
+            x=df_data['month'], # assign x as the dataframe column 'x'
+            y=df_data['sum_with_return'],
+            title = 'Return per Month'
+        )
+    ]
+
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
 
 def generate_roi_chart(dataDict):
 
@@ -94,6 +113,10 @@ def fundSavingsROI(dataDict):
     num_years = dataDict['numYears']
     accumulated_cost_of_fund = 0
 
+    data_list = []
+
+    year = 1
+
     for i in range(1, dataDict['numMonths']):
         print('--- Month ' + str(i) + '---')
         sum_input += dataDict['savingsPerMonth']
@@ -103,6 +126,7 @@ def fundSavingsROI(dataDict):
         print('With return:          ' + str(sum_with_return) + ',-')
         if i % 12 == 0:
             print('\n- Year ' + str(int(i / 12)) + ' -')
+            year += 1
             sum_with_return = int(sum_with_return * (1 - cost_of_fund))
             current_cost_of_fund = int(sum_with_return * cost_of_fund)
             accumulated_cost_of_fund += current_cost_of_fund
@@ -110,6 +134,9 @@ def fundSavingsROI(dataDict):
             print('Sum after yearly cost deducted from overall sum = ' + str(sum_with_return) + ',-')
             print('-------------------------\n')
 
+        data_list.append([i, year, sum_input, sum_with_return])
+        
+    df_data = pd.DataFrame(columns=['month', 'year', 'sum_input', 'sum_with_return'], data=data_list)
 
     dataDict['accumulated_savings'] = round(sum_input,2)
     dataDict['accumulated_savings_with_return'] = round(sum_with_return,2)
@@ -134,7 +161,7 @@ def fundSavingsROI(dataDict):
     dataDict['fortune'] = dataDict['accumulated_savings'] + dataDict['actual_gain_at_withdraw']
     dataDict['fortune']
 
-    return dataDict
+    return dataDict, df_data
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
@@ -181,19 +208,22 @@ def fund_savings():
 
         fundSavingsDict['interestRatePercent']  = float(fundSavingsForm.interestRatePercent.data)
         fundSavingsDict['interestRate']         = (fundSavingsDict['interestRatePercent']  / 100) + 1
-        fundSavingsDict['interestRateMoM']      = fundSavingsDict['interestRate'] ** (1 / 12)
+        fundSavingsDict['interestRateMoM']      = round(fundSavingsDict['interestRate'] ** (1 / 12),4)
 
         fundSavingsDict['savingsPerMonth']      = int(fundSavingsForm.savingsPerMonth.data)
         fundSavingsDict['costOfFund']           = float(fundSavingsForm.costOfFund.data) / 100
         fundSavingsDict['taxRate']              = float(fundSavingsForm.taxRate.data) / 100
 
-        fundSavingsDict = fundSavingsROI(fundSavingsDict)
+        fundSavingsDict, df_fundsavings = fundSavingsROI(fundSavingsDict)
 
         print(fundSavingsDict)
+        print(df_fundsavings)
 
         line_labels, line_values = generate_fundsavings_chart(fundSavingsDict)
 
-        return render_template('fund_savings.html', fundSavingsForm=fundSavingsForm, fundSavingsDict=fundSavingsDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
+        bar_plot = create_plot(df_fundsavings)
+
+        return render_template('fund_savings.html', plot=bar_plot, fundSavingsForm=fundSavingsForm, fundSavingsDict=fundSavingsDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
     
     else:
         print('Fund savings form not validated.')
