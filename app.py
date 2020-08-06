@@ -35,24 +35,6 @@ class fundSavingsFormClass(FlaskForm):
 
 language = 'NO'
 
-## Charts
-labels = [
-    'JAN', 'FEB', 'MAR', 'APR',
-    'MAY', 'JUN', 'JUL', 'AUG',
-    'SEP', 'OCT', 'NOV', 'DEC'
-]
-
-values = [
-    967.67, 1190.89, 1079.75, 1349.19,
-    2328.91, 2504.28, 2873.83, 4764.87,
-    4349.29, 6458.30, 9907, 16297
-]
-
-colors = [
-    "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA",
-    "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
-    "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
-
 def create_plot(df_data):
 
     data = [
@@ -166,6 +148,24 @@ def fundSavingsROI(dataDict):
 @app.route('/', methods=['GET', 'POST'])
 def index():
 
+        ## Charts
+        labels = [
+            'JAN', 'FEB', 'MAR', 'APR',
+            'MAY', 'JUN', 'JUL', 'AUG',
+            'SEP', 'OCT', 'NOV', 'DEC'
+        ]
+
+        values = [
+            967.67, 1190.89, 1079.75, 1349.19,
+            2328.91, 2504.28, 2873.83, 4764.87,
+            4349.29, 6458.30, 9907, 16297
+        ]
+
+        colors = [
+            "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA",
+            "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
+            "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
+
         loanForm = loanFormClass()
 
         loanDict = dict()
@@ -190,6 +190,52 @@ def index():
                 print('Loan form not validated.')
 
         return render_template('index.html', loanForm=loanForm, loanDict=loanDict)
+
+@app.route('/real_estate_value', methods=['GET', 'POST'])
+def real_estate_value():
+
+        ## Charts
+        labels = [
+            'JAN', 'FEB', 'MAR', 'APR',
+            'MAY', 'JUN', 'JUL', 'AUG',
+            'SEP', 'OCT', 'NOV', 'DEC'
+        ]
+
+        values = [
+            967.67, 1190.89, 1079.75, 1349.19,
+            2328.91, 2504.28, 2873.83, 4764.87,
+            4349.29, 6458.30, 9907, 16297
+        ]
+
+        colors = [
+            "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA",
+            "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
+            "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
+
+        loanForm = loanFormClass()
+
+        loanDict = dict()
+
+        if loanForm.validate_on_submit():
+                print('Validated.')
+
+                loanDict['estateValue'] = int(loanForm.estateValue.data)
+                loanDict ['numYears'] = int(loanForm.numYears.data)
+
+                loanDict['necessaryEquity'] = int(loanDict['estateValue'] * 0.15)
+                loanDict['dokumentAvgift'] = int(loanDict['estateValue'] * 0.025)
+
+                loanDict['interestRate'] = float(loanForm.interestRate.data)
+
+
+                line_labels, line_values = generate_roi_chart(loanDict)
+
+                return render_template('real_estate_value.html', loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
+        
+        else:
+                print('Loan form not validated.')
+
+        return render_template('real_estate_value.html', loanForm=loanForm, loanDict=loanDict)
 
 @app.route('/fund_savings', methods=['GET', 'POST'])
 def fund_savings():
