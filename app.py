@@ -58,13 +58,6 @@ def create_plot_roi(dataDict):
     # Calculate values
     values = exponential(dataDict['estateValue'], dataDict['interestRate'], dataDict['numYears'])
 
-
-    print(labels)
-    print(type(labels[0]))
-    print(values)
-    print(type(values[0]))
-
-
     data = [
         go.Line(
             x=labels, # assign x as the dataframe column 'x'
