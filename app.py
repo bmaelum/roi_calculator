@@ -67,7 +67,7 @@ def create_plot_roi(dataDict):
 
     data = [
         go.Line(
-            x=values, # assign x as the dataframe column 'x'
+            x=labels, # assign x as the dataframe column 'x'
             y=values,
             title = 'Return per Year'
         )
