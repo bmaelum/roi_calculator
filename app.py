@@ -53,18 +53,22 @@ def create_plot_roi(dataDict):
 
     # Generate labels
     now = datetime.datetime.now()
-    labels = np.linspace(now.year, now.year+(dataDict['numYears']-1), num=dataDict['numYears'], endpoint=True)
+    labels = np.linspace(now.year, now.year+(dataDict['numYears']), num=dataDict['numYears']+1, endpoint=True)
 
     # Calculate values
     values = exponential(dataDict['estateValue'], dataDict['interestRate'], dataDict['numYears'])
 
-    line_labels=labels
-    line_values=values
+
+    print(labels)
+    print(type(labels[0]))
+    print(values)
+    print(type(values[0]))
+
 
     data = [
         go.Line(
             x=values, # assign x as the dataframe column 'x'
-            y=labels,
+            y=values,
             title = 'Return per Year'
         )
     ]
@@ -124,21 +128,21 @@ def fundSavingsROI(dataDict):
     year = 1
 
     for i in range(1, dataDict['numMonths']):
-        print('--- Month ' + str(i) + '---')
+        #print('--- Month ' + str(i) + '---')
         sum_input += dataDict['savingsPerMonth']
         sum_with_return += dataDict['savingsPerMonth']
         sum_with_return = int(sum_with_return * (MoM_return))
-        print('Accumulated savings:  ' + str(sum_input) + ',-')
-        print('With return:          ' + str(sum_with_return) + ',-')
+        #print('Accumulated savings:  ' + str(sum_input) + ',-')
+        #print('With return:          ' + str(sum_with_return) + ',-')
         if i % 12 == 0:
-            print('\n- Year ' + str(int(i / 12)) + ' -')
+            #print('\n- Year ' + str(int(i / 12)) + ' -')
             year += 1
             sum_with_return = int(sum_with_return * (1 - cost_of_fund))
             current_cost_of_fund = int(sum_with_return * cost_of_fund)
             accumulated_cost_of_fund += current_cost_of_fund
-            print('Yearly cost of fund = ' + str(round(current_cost_of_fund)) + ',-')
-            print('Sum after yearly cost deducted from overall sum = ' + str(sum_with_return) + ',-')
-            print('-------------------------\n')
+            #print('Yearly cost of fund = ' + str(round(current_cost_of_fund)) + ',-')
+            #print('Sum after yearly cost deducted from overall sum = ' + str(sum_with_return) + ',-')
+            #print('-------------------------\n')
 
         data_list.append([i, year, sum_input, sum_with_return])
         
@@ -153,12 +157,12 @@ def fundSavingsROI(dataDict):
 
     gain_after_tax = total_gain * (1 - (tax_rate))
     tax_deduction = total_gain * tax_rate
-    print('Tax = ' + str(tax_deduction) + ',-')
-    print('Actual gain after ' + str(num_years) + ' years = ' + str(gain_after_tax) + ',-')
+    #print('Tax = ' + str(tax_deduction) + ',-')
+    #print('Actual gain after ' + str(num_years) + ' years = ' + str(gain_after_tax) + ',-')
     dataDict['tax'] = round(tax_deduction,2)
 
     total_fund_cost = dataDict['accumulated_cost_of_fund'] + tax_deduction
-    print('Total cost of fund = ' + str(total_fund_cost))
+    #print('Total cost of fund = ' + str(total_fund_cost))
     dataDict['total_cost_of_fund'] = round(total_fund_cost)
 
     dataDict['actual_gain_at_withdraw'] = round(gain_after_tax,2)
@@ -169,30 +173,14 @@ def fundSavingsROI(dataDict):
 
     return dataDict, df_data
 
+
+### ----- APP ROUTES -----
 @app.route('/', methods=['GET', 'POST'])
 def index():
         return render_template('index.html')
 
 @app.route('/real_estate_value', methods=['GET', 'POST'])
 def real_estate_value():
-
-        ## Charts
-        labels = [
-            'JAN', 'FEB', 'MAR', 'APR',
-            'MAY', 'JUN', 'JUL', 'AUG',
-            'SEP', 'OCT', 'NOV', 'DEC'
-        ]
-
-        values = [
-            967.67, 1190.89, 1079.75, 1349.19,
-            2328.91, 2504.28, 2873.83, 4764.87,
-            4349.29, 6458.30, 9907, 16297
-        ]
-
-        colors = [
-            "#F7464A", "#46BFBD", "#FDB45C", "#FEDCBA",
-            "#ABCDEF", "#DDDDDD", "#ABCABC", "#4169E1",
-            "#C71585", "#FF4500", "#FEDCBA", "#46BFBD"]
 
         loanForm = loanFormClass()
 
@@ -209,12 +197,11 @@ def real_estate_value():
 
                 loanDict['interestRate'] = float(loanForm.interestRate.data)
 
-
                 line_labels, line_values = generate_roi_chart(loanDict)
 
-                create_plot_roi(loanDict)
+                line_plot = create_plot_roi(loanDict)
 
-                return render_template('real_estate_value.html', loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
+                return render_template('real_estate_value.html',plot=line_plot, loanForm=loanForm, loanDict=loanDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
         
         else:
                 print('Loan form not validated.')
@@ -246,8 +233,8 @@ def fund_savings():
 
         fundSavingsDict, df_fundsavings = fundSavingsROI(fundSavingsDict)
 
-        print(fundSavingsDict)
-        print(df_fundsavings)
+        #print(fundSavingsDict)
+        #print(df_fundsavings)
 
         line_labels, line_values = generate_fundsavings_chart(fundSavingsDict)
 
@@ -259,6 +246,8 @@ def fund_savings():
         print('Fund savings form not validated.')
 
     return render_template('fund_savings.html', fundSavingsForm=fundSavingsForm, fundSavingsDict=fundSavingsDict)
+
+
 
 if __name__ == "__main__":
     app.run(debug=True)
