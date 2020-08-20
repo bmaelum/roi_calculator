@@ -50,7 +50,7 @@
                         <tr>
                         <td>
                             <div class="form-group" style="margin-right: 120px;">
-                              <label>Interest Rate</label>
+                              <label>Interest Rate (in %)</label>
                               {{ loanForm.interestRate(size=20) }}
                             </div>
                           </td>
@@ -94,7 +94,7 @@
                             <label>YoY Interest Rate</label>
                         </td>
                         <td>
-                          {{ (loanDict['interestRate'] * 100 - 100)|string + '%'}}
+                          {{ (loanDict['interestRate'])|string + '%'}}
                         </td>
                       </tr>
 
