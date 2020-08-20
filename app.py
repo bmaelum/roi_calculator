@@ -103,7 +103,7 @@ def exponential(start, base, num_samples):
     samples = [start]
 
     for i in range(0, num_samples):
-        samples.append(int(samples[-1] * base))
+        samples.append(int(samples[-1]) + int(samples[-1] * base / 100))
 
     return samples
 
