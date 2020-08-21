@@ -226,14 +226,11 @@ def fund_savings():
 
         fundSavingsDict, df_fundsavings = fundSavingsROI(fundSavingsDict)
 
-        #print(fundSavingsDict)
-        #print(df_fundsavings)
-
-        line_labels, line_values = generate_fundsavings_chart(fundSavingsDict)
+        print(df_fundsavings)
 
         bar_plot = create_plot(df_fundsavings)
 
-        return render_template('fund_savings.html', plot=bar_plot, fundSavingsForm=fundSavingsForm, fundSavingsDict=fundSavingsDict, title='ROI per year', min=min(line_values), max=(max(line_values)-min(line_values)), labels=line_labels, values=line_values)
+        return render_template('fund_savings.html', plot=bar_plot, fundSavingsForm=fundSavingsForm, fundSavingsDict=fundSavingsDict, title='ROI per year')
     
     else:
         print('Fund savings form not validated.')
