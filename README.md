@@ -1,5 +1,7 @@
 # Return-on-Investment Calculator
-Available here: https://roi-calculator-production.herokuapp.com/.
+The version of this repo is available here: https://roi-calculator-production.herokuapp.com/. (Hosted on Heroku)
+
+However, I am further developing the codebase and the newest version is available here: www.calcinvest.com. (Hosted on AWS)
 
 The purpose of this calculator is to help you find out wether you should get a loan and buy a house or keep pouring your money into a fund.
 
