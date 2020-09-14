@@ -14,11 +14,11 @@ import matplotlib.pyplot as plt
 
 import datetime
 
-app = Flask(__name__)
+application = Flask(__name__)
 
 import os
 SECRET_KEY = os.urandom(10)
-app.config['SECRET_KEY'] = SECRET_KEY
+application.config['SECRET_KEY'] = SECRET_KEY
 
 class loanFormClass(FlaskForm):
     estateValue         = StringField('estateValue', validators=[DataRequired()], render_kw={"placeholder": "Write a number..."})
@@ -168,11 +168,11 @@ def fundSavingsROI(dataDict):
 
 
 ### ----- APP ROUTES -----
-@app.route('/', methods=['GET', 'POST'])
+@application.route('/', methods=['GET', 'POST'])
 def index():
         return render_template('index.html')
 
-@app.route('/real_estate_value', methods=['GET', 'POST'])
+@application.route('/real_estate_value', methods=['GET', 'POST'])
 def real_estate_value():
 
         loanForm = loanFormClass()
@@ -201,7 +201,7 @@ def real_estate_value():
 
         return render_template('real_estate_value.html', loanForm=loanForm, loanDict=loanDict)
 
-@app.route('/fund_savings', methods=['GET', 'POST'])
+@application.route('/fund_savings', methods=['GET', 'POST'])
 def fund_savings():
         
     fundSavingsForm = fundSavingsFormClass()
@@ -240,4 +240,4 @@ def fund_savings():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    application.run(debug=True)
