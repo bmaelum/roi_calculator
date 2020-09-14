@@ -1,5 +1,5 @@
 # Return-on-Investment Calculator
-Available here: https://roi-calculator-production.herokuapp.com/
+Available here: https://roi-calculator-production.herokuapp.com/. 
 The purpose of this calculator is to help you find out wether you should get a loan and buy a house or keep pouring your money into a fund.
 
 ## Return-on-Investment Calculator
